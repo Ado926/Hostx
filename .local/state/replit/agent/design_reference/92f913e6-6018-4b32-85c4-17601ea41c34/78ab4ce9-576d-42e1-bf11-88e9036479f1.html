@@ -1,0 +1,386 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTermux - Web Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'terminal-bg': '#0C0C0C',
+                        'terminal-green': '#00FF41',
+                        'terminal-gray': '#808080',
+                        'terminal-yellow': '#FFD700',
+                        'terminal-red': '#FF6B6B',
+                        'terminal-blue': '#4A9EFF'
+                    },
+                    fontFamily: {
+                        'mono': ['Courier New', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .cursor-blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .terminal-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .terminal-scrollbar::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        .terminal-scrollbar::-webkit-scrollbar-thumb {
+            background: #404040;
+            border-radius: 4px;
+        }
+        
+        .terminal-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #606060;
+        }
+    </style>
+</head>
+<body class="bg-terminal-bg text-terminal-green font-mono text-sm leading-relaxed overflow-hidden">
+    <!-- Terminal Window -->
+    <div class="h-screen flex flex-col">
+        <!-- Terminal Header -->
+        <div class="bg-gray-800 border-b border-gray-600 px-4 py-2 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Window Controls -->
+                <div class="flex space-x-2">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <span class="text-white font-semibold">WebTermux Terminal</span>
+            </div>
+            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                <span class="flex items-center">
+                    <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Connected
+                </span>
+                <span>Session: 127.0.0.1:8080</span>
+                <span id="current-time">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- Terminal Content Area -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Command Output Area -->
+            <div id="terminal-output" class="flex-1 overflow-y-auto terminal-scrollbar p-4 space-y-1">
+                <!-- Welcome Message -->
+                <div class="text-terminal-blue">
+                    <pre>╭─────────────────────────────────────────────────╮
+│                  Welcome to WebTermux              │
+│              Web-based Terminal Emulator           │
+│                                                     │
+│  Type 'help' for available commands                │
+│  Use arrow keys for command history                │
+│  Tab for auto-completion                           │
+╰─────────────────────────────────────────────────────╯</pre>
+                </div>
+                
+                <!-- Sample Command History -->
+                <div class="mt-4">
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>pwd</span>
+                    </div>
+                    <div class="text-terminal-gray pl-4">/home/user</div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>ls -la</span>
+                    </div>
+                    <div class="text-terminal-gray pl-4">
+                        <div>total 12</div>
+                        <div>drwxr-xr-x 3 user user 4096 Jan 15 14:30 .</div>
+                        <div>drwxr-xr-x 3 root root 4096 Jan 15 14:20 ..</div>
+                        <div>-rw-r--r-- 1 user user  220 Jan 15 14:20 .bash_logout</div>
+                        <div>-rw-r--r-- 1 user user 3526 Jan 15 14:20 .bashrc</div>
+                        <div>-rw-r--r-- 1 user user  807 Jan 15 14:20 .profile</div>
+                        <div class="text-terminal-blue">drwxr-xr-x 2 user user 4096 Jan 15 14:25 Documents</div>
+                        <div class="text-terminal-blue">drwxr-xr-x 2 user user 4096 Jan 15 14:25 Projects</div>
+                        <div class="text-terminal-green">-rwxr-xr-x 1 user user 1024 Jan 15 14:28 script.sh</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>mkdir projects/new-app</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>cd projects/new-app</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~/projects/new-app</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>touch index.html package.json</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~/projects/new-app</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>echo "Hello World" > index.html</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~/projects/new-app</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>cat index.html</span>
+                    </div>
+                    <div class="text-terminal-gray pl-4">Hello World</div>
+                </div>
+
+                <div>
+                    <div class="flex">
+                        <span class="text-terminal-yellow">user@webtermux</span>
+                        <span class="text-terminal-gray">:</span>
+                        <span class="text-terminal-blue">~/projects/new-app</span>
+                        <span class="text-terminal-gray">$ </span>
+                        <span>help</span>
+                    </div>
+                    <div class="text-terminal-gray pl-4">
+                        <div class="text-terminal-yellow">Available Commands:</div>
+                        <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-1">
+                            <div><span class="text-terminal-green">ls</span> - List directory contents</div>
+                            <div><span class="text-terminal-green">pwd</span> - Print working directory</div>
+                            <div><span class="text-terminal-green">cd</span> - Change directory</div>
+                            <div><span class="text-terminal-green">mkdir</span> - Create directory</div>
+                            <div><span class="text-terminal-green">touch</span> - Create file</div>
+                            <div><span class="text-terminal-green">cat</span> - Display file contents</div>
+                            <div><span class="text-terminal-green">echo</span> - Display text</div>
+                            <div><span class="text-terminal-green">rm</span> - Remove files</div>
+                            <div><span class="text-terminal-green">cp</span> - Copy files</div>
+                            <div><span class="text-terminal-green">mv</span> - Move/rename files</div>
+                            <div><span class="text-terminal-green">clear</span> - Clear terminal</div>
+                            <div><span class="text-terminal-green">help</span> - Show this help</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Command Input Area -->
+            <div class="border-t border-gray-600 p-4">
+                <div class="flex items-center">
+                    <span class="text-terminal-yellow">user@webtermux</span>
+                    <span class="text-terminal-gray">:</span>
+                    <span class="text-terminal-blue">~/projects/new-app</span>
+                    <span class="text-terminal-gray">$ </span>
+                    <input 
+                        type="text" 
+                        id="command-input" 
+                        class="flex-1 bg-transparent text-terminal-green outline-none ml-1" 
+                        placeholder="Enter command..."
+                        autocomplete="off"
+                        data-mock="true"
+                        data-implementation="Connect to WebSocket for real command processing"
+                    />
+                    <span class="cursor-blink text-terminal-green">█</span>
+                </div>
+                
+                <!-- Command Suggestions (when typing) -->
+                <div id="command-suggestions" class="mt-2 hidden">
+                    <div class="text-xs text-terminal-gray">
+                        <div class="bg-gray-800 border border-gray-600 rounded p-2 space-y-1">
+                            <div class="text-terminal-yellow">Suggestions:</div>
+                            <div class="hover:bg-gray-700 px-2 py-1 rounded cursor-pointer" data-mock="true">ls -la</div>
+                            <div class="hover:bg-gray-700 px-2 py-1 rounded cursor-pointer" data-mock="true">ls -l</div>
+                            <div class="hover:bg-gray-700 px-2 py-1 rounded cursor-pointer" data-mock="true">ls</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="bg-gray-800 border-t border-gray-600 px-4 py-1 flex items-center justify-between text-xs">
+            <div class="flex items-center space-x-4 text-gray-400">
+                <span>Terminal Session Active</span>
+                <span>|</span>
+                <span>WebSocket Connected</span>
+                <span>|</span>
+                <span>Commands: 42</span>
+            </div>
+            <div class="flex items-center space-x-4 text-gray-400">
+                <span>CPU: 12%</span>
+                <span>|</span>
+                <span>Memory: 256MB</span>
+                <span>|</span>
+                <span>Uptime: 2h 34m</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu (Right-click) -->
+    <div id="context-menu" class="fixed hidden bg-gray-800 border border-gray-600 rounded shadow-lg py-1 z-50" data-mock="true">
+        <div class="px-3 py-1 hover:bg-gray-700 cursor-pointer text-sm">Copy</div>
+        <div class="px-3 py-1 hover:bg-gray-700 cursor-pointer text-sm">Paste</div>
+        <div class="border-t border-gray-600 my-1"></div>
+        <div class="px-3 py-1 hover:bg-gray-700 cursor-pointer text-sm">Clear Terminal</div>
+        <div class="px-3 py-1 hover:bg-gray-700 cursor-pointer text-sm">Settings</div>
+    </div>
+
+    <script>
+        // TODO: Implement WebSocket connection for real-time command processing
+        // TODO: Implement command history navigation with arrow keys
+        // TODO: Add auto-completion functionality
+        // TODO: Connect to Express.js backend for command execution
+        // TODO: Implement file system simulation with persistence
+        
+        (function() {
+            // Update time display
+            function updateTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+                const timeElement = document.getElementById('current-time');
+                if (timeElement) {
+                    timeElement.textContent = timeString;
+                }
+            }
+            
+            // Update time every second
+            updateTime();
+            setInterval(updateTime, 1000);
+            
+            // Auto-scroll terminal output to bottom
+            const terminalOutput = document.getElementById('terminal-output');
+            if (terminalOutput) {
+                terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            }
+            
+            // Focus on command input
+            const commandInput = document.getElementById('command-input');
+            if (commandInput) {
+                commandInput.focus();
+                
+                // Maintain focus on input
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#context-menu')) {
+                        commandInput.focus();
+                    }
+                });
+            }
+            
+            // Mock command suggestions
+            const suggestions = document.getElementById('command-suggestions');
+            if (commandInput && suggestions) {
+                commandInput.addEventListener('input', function(e) {
+                    const value = e.target.value.toLowerCase();
+                    if (value.startsWith('ls') && value.length > 0) {
+                        suggestions.classList.remove('hidden');
+                    } else {
+                        suggestions.classList.add('hidden');
+                    }
+                });
+                
+                // Hide suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#command-input') && !e.target.closest('#command-suggestions')) {
+                        suggestions.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Context menu functionality
+            const contextMenu = document.getElementById('context-menu');
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                if (contextMenu) {
+                    contextMenu.style.left = e.pageX + 'px';
+                    contextMenu.style.top = e.pageY + 'px';
+                    contextMenu.classList.remove('hidden');
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                if (contextMenu && !e.target.closest('#context-menu')) {
+                    contextMenu.classList.add('hidden');
+                }
+            });
+            
+            // Mock command history with arrow keys
+            let commandHistory = [
+                'pwd',
+                'ls -la', 
+                'mkdir projects/new-app',
+                'cd projects/new-app',
+                'touch index.html package.json',
+                'echo "Hello World" > index.html',
+                'cat index.html',
+                'help'
+            ];
+            let historyIndex = commandHistory.length;
+            
+            if (commandInput) {
+                commandInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (historyIndex > 0) {
+                            historyIndex--;
+                            this.value = commandHistory[historyIndex];
+                        }
+                    } else if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (historyIndex < commandHistory.length - 1) {
+                            historyIndex++;
+                            this.value = commandHistory[historyIndex];
+                        } else {
+                            historyIndex = commandHistory.length;
+                            this.value = '';
+                        }
+                    } else if (e.key === 'Enter') {
+                        // TODO: Process command and send to backend
+                        console.log('Command entered:', this.value);
+                        this.value = '';
+                        historyIndex = commandHistory.length;
+                    }
+                });
+            }
+        })();
+    </script>
+</body>
+</html>
